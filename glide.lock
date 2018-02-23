@@ -1,6 +1,12 @@
-hash: 2ea65c82113fd1ebd94c2c8263d3ff30fc4e5e0439c6a2d6e799aa93bd46c286
-updated: 2018-02-16T23:12:33.817416-06:00
-imports: []
+hash: 61814f617861b61928aa96c02d3c8f861b3d87c33ab5e665401ad97794a4a0c9
+updated: 2018-02-23T00:00:53.438993-06:00
+imports:
+- name: github.com/jmoiron/sqlx
+  version: 05cef0741ade10ca668982355b3f3f0bcf0ff0a8
+  subpackages:
+  - reflectx
+- name: github.com/mattn/go-sqlite3
+  version: 6c771bb9887719704b210e87e934f08be014bdb1
 testImports:
 - name: github.com/davecgh/go-spew
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
