@@ -34,7 +34,7 @@ func Connect(connectionURL string) (*Lite, error) {
 func (li *Lite) Get(ctx context.Context, id int64) (string, string, error) {
 	var m Item
 	err := li.db.GetContext(ctx, &m, `
-		SELECT actual,expected FROM issues WHERE id=?
+		SELECT actual,expected FROM issues WHERE ROWID=?
 	`, id)
 	return m.Expected, m.Actual, err
 }
@@ -48,11 +48,18 @@ type Item struct {
 // Save implements Collector.
 func (li *Lite) Save(ctx context.Context, titleOrExpected, actual string) (int64, error) {
 	nowUTC := time.Now().UTC()
-	id := nowUTC.UnixNano()
-	_, err := li.db.ExecContext(ctx, `
-		INSERT INTO issues (id, expected, actual, created_at)
-		VALUES (?, ?, ?, ?)
-	`, id, titleOrExpected, actual, nowUTC.Format(time.RFC3339))
+	qr, err := li.db.ExecContext(ctx, `
+		INSERT INTO issues (expected, actual, created_at)
+		VALUES (?, ?, ?)
+	`, titleOrExpected, actual, nowUTC.Format(time.RFC3339))
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := qr.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
 	return id, err
 }
 
@@ -88,7 +95,6 @@ const (
 	`
 	dbSchemaTableIssues = `
 		CREATE TABLE issues (
-			id INTEGER PRIMARY KEY,
 			expected TEXT NOT NULL,
 			actual TEXT NOT NULL,
 			created_at TEXT NOT NULL

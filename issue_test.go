@@ -47,7 +47,11 @@ func TestStoreAndRetrieve(t *testing.T) {
 
 	id, err := c.Add(ctx, issueTitle, issueContent)
 	assert.Nil(t, err)
-	assert.EqualValues(t, true, id > 1)
+	assert.EqualValues(t, true, id > 0)
+
+	id2, err := c.Add(ctx, issueTitle, issueContent)
+	assert.Nil(t, err)
+	assert.EqualValues(t, true, id2 > id)
 
 	// Retrieve ticket issue.
 
