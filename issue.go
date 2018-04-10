@@ -11,6 +11,9 @@ type Collector interface {
 
 	// Save stores ticket expected and actual info and returns a new id.
 	Save(ctx context.Context, titleOrExpected, actual string) (id int64, err error)
+
+	// Append adds body content to issue.
+	Append(ctx context.Context, id int64, body string) error
 }
 
 // Tracker type.
@@ -39,4 +42,14 @@ func (xt *Tracker) Add(ctx context.Context, titleOrExpected, actual string) (int
 func (xt *Tracker) Retrieve(ctx context.Context, id int64) (string, string, error) {
 	title, actual, err := xt.store.Get(ctx, id)
 	return title, actual, err
+}
+
+// NewID returns a new empty issue id.
+func (xt *Tracker) NewID(ctx context.Context, titleOrExpected string) (int64, error) {
+	return xt.Add(ctx, titleOrExpected, "")
+}
+
+// Append append body info to issue.
+func (xt *Tracker) Append(ctx context.Context, id int64, body string) error {
+	return xt.store.Append(ctx, id, body)
 }

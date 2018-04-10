@@ -63,6 +63,17 @@ func (li *Lite) Save(ctx context.Context, titleOrExpected, actual string) (int64
 	return id, err
 }
 
+// Append implements Collector.
+func (li *Lite) Append(ctx context.Context, id int64, body string) error {
+	_, err := li.db.ExecContext(ctx, `
+		UPDATE issues SET actual = actual || ? || char(10) WHERE ROWID = ?
+	`, body, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func getVersion(db *sqlx.DB) (string, error) {
 	var s string
 	err := db.Get(&s, `SELECT key FROM issue_version`)
